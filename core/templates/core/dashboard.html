@@ -1,0 +1,73 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+    <h2 class="mb-4">Dashboard Overview</h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Total KPIs</h5>
+                    <p class="card-text fs-4">{{ kpi_count }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Tasks Assigned</h5>
+                    <p class="card-text fs-4">{{ task_count }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Uploaded Files</h5>
+                    <p class="card-text fs-4">{{ file_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if user.role == 'superadmin' or user.role == 'dept_head' %}
+        <h4>Latest KPIs</h4>
+        <ul class="list-group mb-4">
+            {% for kpi in recent_kpis %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ kpi.title }} — {{ kpi.department.name }} ({{ kpi.month }} {{ kpi.year }})
+                    <span class="badge bg-primary rounded-pill">{{ kpi.value }} {{ kpi.unit }}</span>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No KPI records yet.</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h4>Recent Tasks</h4>
+    <ul class="list-group mb-4">
+        {% for task in recent_tasks %}
+            <li class="list-group-item">
+                <strong>{{ task.title }}</strong> — {{ task.department.name }}
+                <br><small>Due: {{ task.due_date }}</small>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No tasks yet.</li>
+        {% endfor %}
+    </ul>
+
+    <h4>Recent Uploads</h4>
+    <ul class="list-group mb-4">
+        {% for file in recent_files %}
+            <li class="list-group-item">
+                <a href="{{ file.file.url }}" target="_blank">{{ file.file.name }}</a>
+                <br><small>Uploaded by {{ file.uploaded_by.username }}</small>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No files uploaded yet.</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
